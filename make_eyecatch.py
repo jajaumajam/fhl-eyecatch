@@ -104,7 +104,7 @@ def alt_text(cfg):
         return cfg["alt"]
     t = ""
     for line in cfg["title"]:  # 行末が助詞などなら詰め、それ以外は空白でつなぐ
-        t += line if (not t or t[-1] in "のとで・、がにはを「") else " " + line
+        t += line if (not t or t[-1] in "のとで・、がにはを「も") else " " + line
     rest = [x for x in ([cfg.get("badge")] + cfg.get("sub", [])) if x]
     if rest:
         t += ("" if t[-1] in "？！。" else "。") + "、".join(rest)

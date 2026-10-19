@@ -54,15 +54,21 @@ def arc(d, cx, cy, r, width, color, start, end):
 def dot(d, x, y, r, color):
     d.ellipse([(x - r) * S, (y - r) * S, (x + r) * S, (y + r) * S], fill=color)
 
+def dot_on_arc(d, cx, cy, r, width, deg, dr, color):
+    """弧の線の中心（半径 r - width/2）上に点を置く。PILの弧は外周rから内側にwidth分描かれる"""
+    import math
+    rc = r - width / 2
+    dot(d, cx + rc * math.cos(math.radians(deg)), cy + rc * math.sin(math.radians(deg)), dr, color)
+
 def decorate(d):
     # 左上：ロゴの弧（緑の太い弧＋青の細い弧）
     arc(d, -40, -40, 220, 28, C["green"], 0, 90)
     arc(d, -40, -40, 170, 11, C["blue"], 0, 90)
-    dot(d, 112, 96, 8, C["orange"])
+    dot_on_arc(d, -40, -40, 220, 28, 45, 8, C["orange"])
     # 右下
     arc(d, 1240, 670, 230, 28, C["green"], 180, 270)
     arc(d, 1240, 670, 178, 11, C["blue"], 180, 270)
-    dot(d, 1081, 511, 8, C["orange"])
+    dot_on_arc(d, 1240, 670, 230, 28, 225, 8, C["orange"])
     # 下端のライン
     d.rectangle([0, (H - 8) * S, W * S, H * S], fill=C["green"])
 

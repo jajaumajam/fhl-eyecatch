@@ -16,7 +16,8 @@ config（JSON）:
     badge     : 青いバッジの文言（任意）
     sub       : 補足（任意、配列）
     cards     : [[見出し, 数字, 単位], ...] 最大2枚（任意）
-    alt       : 画像の代替テキスト（WordPress登録時に使う）
+    alt       : 画像の代替テキスト（任意。省略時はタイトル・バッジ・補足から作る）
+    post_id   : WordPressの記事ID
 """
 import json, os, sys
 from PIL import Image, ImageDraw, ImageFont
@@ -98,6 +99,15 @@ def brand(img, d, cx, cy):
     bb = d.textbbox((0, 0), name, font=fn)
     d.text(((x0 + 2 * r + gap) * S, cy * S - (bb[3] + bb[1]) / 2), name, font=fn, fill=C["dark"])
 
+def alt_text(cfg):
+    if cfg.get("alt"):
+        return cfg["alt"]
+    parts = ["".join(cfg["title"])]
+    rest = [x for x in ([cfg.get("badge")] + cfg.get("sub", [])) if x]
+    if rest:
+        parts.append("、".join(rest))
+    return "。".join(parts) + "（藤沢北部まちづくりラボ）"
+
 def main(cfg, out):
     img = Image.new("RGB", (W * S, H * S), C["white"])
     d = ImageDraw.Draw(img)
@@ -106,6 +116,8 @@ def main(cfg, out):
     cx = 600
     lines = cfg["title"]
     ts = cfg.get("title_size", 62)
+    while ts > 44 and max(d.textlength(l, font=f("Black", ts)) for l in lines) / S > 520:
+        ts -= 2  # 中央の幅520pxに収まるまで小さくする
     has_sub = bool(cfg.get("badge")) or bool(cfg.get("sub"))
     # 縦方向の中央寄せ
     block = 44 + 30 + len(lines) * (ts + 16) + (26 + 56 if cfg.get("badge") else 0) \

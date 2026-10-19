@@ -102,11 +102,13 @@ def brand(img, d, cx, cy):
 def alt_text(cfg):
     if cfg.get("alt"):
         return cfg["alt"]
-    parts = ["".join(cfg["title"])]
+    t = ""
+    for line in cfg["title"]:  # 行末が助詞などなら詰め、それ以外は空白でつなぐ
+        t += line if (not t or t[-1] in "のとで・、がにはを「") else " " + line
     rest = [x for x in ([cfg.get("badge")] + cfg.get("sub", [])) if x]
     if rest:
-        parts.append("、".join(rest))
-    return "。".join(parts) + "（藤沢北部まちづくりラボ）"
+        t += ("" if t[-1] in "？！。" else "。") + "、".join(rest)
+    return t + "（藤沢北部まちづくりラボ）"
 
 def main(cfg, out):
     img = Image.new("RGB", (W * S, H * S), C["white"])
